@@ -9,6 +9,12 @@
 
 
 
+
+mysqldump -u root -p --databases library_db > D:\dev\it30b\backups\0818206_library_db.sql
+
+mysqldump -u root -p --databases library_db > C:\xampp\it30b\backups\0818206_library_db.sql 
+
+
+
 # Utility Commands
 \! cls
-mysqldump -u root -p --databases library_db > D:\dev\it30b\backups\0818206_library_db.sql
