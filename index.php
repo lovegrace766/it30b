@@ -95,9 +95,10 @@ if($section==='students'){
                 </td>
              </tr>
          <?php endif;?>
-    </tnody>
-    </table>
-    
+    </tbody>
+
+</table>
+
     <?php if($section === 'books'): ?>
        <h1>Books</h1>
        <?php endif;?>
