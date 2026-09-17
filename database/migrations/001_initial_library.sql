@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS students (
     student_course VARCHAR(50) NOT NULL,
 
     --Student created at timestamp
-    student_created_at TIMESTAMP NOT NULL,
+    student_created_at TIMESTAMP NOT NULL
         DEFAULT CURRENT_TIMESTAMP
 
 )ENGINE=InnoDB
