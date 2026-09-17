@@ -30,6 +30,18 @@ $section = $_GET['section'] ??'students';
 // Deter,ime CRUD Operation
 $action = $_GET['action'] ?? '';
 
+// Fetch Students
+if($section==='students'){
+
+   $stmt = $pdo->("
+   SELECT *
+   FROM students
+   ORDER BY student_id DESC
+   ");
+
+   $students == $stmt->fetchALl();
+}
+
 
 ?>
 <!DOCTYPE html>
@@ -49,7 +61,43 @@ $action = $_GET['action'] ?? '';
     <hr>
     <?php if($section === 'students'): ?>
        <h1>Students</h1>
-       <?php endif;?>
+        <table>
+            <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>First Name</th>
+                  <th>Last Name</th>
+                  <th>Course</th>
+                  <th>Created</th>
+                  <th>Actions</th>
+                </tr>
+        <thead>
+        <tbody>
+                <td>
+                    <?=htmlspecialchars($students['student_id']) ?>
+                </td>
+                <td>
+                    <?=htmlspecialchars($students['student_first_name']) ?>
+                </td>
+                <td>
+                    <?=htmlspecialchars($students['student_last_name']) ?>
+                </td>
+                <td>
+                    <?=htmlspecialchars($students['student_course']) ?>
+                </td>
+                <td>
+                    <?=htmlspecialchars($students['student_created_at']) ?>
+                </td>
+                <td>
+                    <a>Edit</a>
+                    |
+                    <a>Delete</a>
+                </td>
+             </tr>
+         <?php endif;?>
+    </tnody>
+    </table>
+    
     <?php if($section === 'books'): ?>
        <h1>Books</h1>
        <?php endif;?>
