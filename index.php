@@ -52,13 +52,13 @@ if ($section === 'students' && $action === 'create') {
         $lastName = trim($_POST['student_last_name'] ?? '');
         $course = trim($_POST['student_course'] ?? '');
 
-        if ($firstName !== '' && $lastName !== '' && $course !== '') {
+    if ($firstName !== '' && $lastName !== '' && $course !== '') {
 
-            $sql = "
-                INSERT INTO students (
-                    student_first_name,
-                    student_last_name,
-                    student_course
+        $sql = "
+            INSERT INTO students (
+                student_first_name,
+                student_last_name,
+                student_course
                 )
                 VALUES (?, ?, ?)
             ";
@@ -73,9 +73,60 @@ if ($section === 'students' && $action === 'create') {
 
             header("Location: index.php?section=students");
             exit;
-        }
-    }
+     }
+// Update Student
+if($section === 'students' && $action ==='update') {
+
+   $studentId = (int) ($_GET['id']) ?? 00;
+
+   // Update student on post
+   if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+      
+        $firstName = trim($_POST['student_first_name'] ?? '');
+        $lastName = trim($_POST['student_last_name'] ?? '');
+        $course = trim($_POST['student_course'] ?? '');
+
+
+     $sql="
+            UPDATE STUDENTS (
+                student_first_name = ?,
+                student_last_name = ?,
+                student_course = ?
+            WHERE student_id = ?
+            ";
+
+    $stmt = $pdo->prepare($sql);
+
+            $stmt-> execute([
+                $firstName,
+                $lastName,
+                $course,
+                $student_id
+            ]);
+        
+        header("Location: index.php?section=students");
+            exit;
+     }
+
+    // Retrieve student info by default
+
+     $stmt = $pdo->prepare("
+        SELECT *
+        FROM Students
+        WHERE student_id = ?
+     ");
+    
+     $stmt->execute([$studentId]);
+
+     $student = $stmt->fetch();
+
+     if(!$student){
+        die("Student Not Found");
+     }
 }
+    }
+    }
+
 
 ?>
 
@@ -110,12 +161,52 @@ if ($section === 'students' && $action === 'create') {
             </a>
         </p>
 
-        <?php if ($action === 'create'): ?>
+    <?php if ($action === 'create'): ?>
 
             <h2>Create Student</h2>
-
             <form method="POST">
+                <p>
+                    <label>First Name:</label>
+                    <br>
+                    <input
+                        type="text"
+                        name="student_first_name"
+                        value="<?=htmlspecialchars($student['student_first_name']) ?>"
+                        required
+                    />
+                </p>
+                <p>
+                    <label>Last Name:</label>
+                    <br>
+                    <input
+                        type="text"
+                        name="student_last_name"
+                        value="<?=htmlspecialchars($student['student_last_name']) ?>"
+                        required
+                    />
+                </p>
+                <p>
+                    <label>Course:</label>
+                    <br>
+                    <input
+                        type="text"
+                        name="student_course"
+                        value="<?=htmlspecialchars($student['student_course']) ?>"
+                        required
+                    />
+                </p>
+                <button type="submit">
+                    Save
+                </button>
 
+                <a href="index.php?section=students">
+                    Cancel
+                </a>
+
+            </form>
+        <?php elseif($action==='update'): ?>
+             <h2>Update Student info</h2>
+             <form method="POST">
                 <p>
                     <label>First Name:</label>
                     <br>
@@ -125,7 +216,6 @@ if ($section === 'students' && $action === 'create') {
                         required
                     />
                 </p>
-
                 <p>
                     <label>Last Name:</label>
                     <br>
@@ -135,7 +225,6 @@ if ($section === 'students' && $action === 'create') {
                         required
                     />
                 </p>
-
                 <p>
                     <label>Course:</label>
                     <br>
@@ -145,7 +234,6 @@ if ($section === 'students' && $action === 'create') {
                         required
                     />
                 </p>
-
                 <button type="submit">
                     Save
                 </button>
@@ -156,10 +244,10 @@ if ($section === 'students' && $action === 'create') {
 
             </form>
 
+
         <?php else: ?>
 
-            <table border="1">
-
+         <table border="1">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -170,12 +258,10 @@ if ($section === 'students' && $action === 'create') {
                         <th>Actions</th>
                     </tr>
                 </thead>
-
                 <tbody>
-
                     <?php foreach ($students as $student): ?>
 
-                        <tr>
+                         <tr>
 
                             <td>
                                 <?= htmlspecialchars($student['student_id']) ?>
@@ -198,19 +284,18 @@ if ($section === 'students' && $action === 'create') {
                             </td>
 
                             <td>
-                                <a href="#">Edit</a>
+                                <a href="index.php?section=students&action=update&id=<?=$student['student_id']?> ">
+                                    Edit
+                                </a>
                                 |
-                                <a href="#">Delete</a>
+                                <a>Delete</a>
                             </td>
 
                         </tr>
 
                     <?php endforeach; ?>
-
                 </tbody>
-
             </table>
-
         <?php endif; ?>
 
     <?php endif; ?>
