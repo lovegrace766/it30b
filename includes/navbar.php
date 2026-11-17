@@ -128,6 +128,7 @@ while ($row = $catStmt->fetch()) {
             Dashboard
         </a>
 
+        
         <a href="index.php?section=students" class="<?= navActive('students', $currentSection) ?>">
             <span class="material-icons">people</span>
             Students
