@@ -1,5 +1,6 @@
 <?php
 
+
 //Database Connection
 $host = 'localhost';
 $db = 'it30b_db_lab';
@@ -814,6 +815,9 @@ if ($section === 'borrow' && $action === 'return') {
     </script>
    
      <?php unset($_SESSION['alert']); ?>
+
+
+
 
 <?php endif;?>
 </html>
