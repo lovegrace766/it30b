@@ -18,11 +18,40 @@ $catStmt = $pdo->query("
     GROUP BY book_category
     ORDER BY cnt DESC
 ");
+
 $categories = [];
 $categoryCounts = [];
 while ($row = $catStmt->fetch()) {
     $categories[]     = $row['book_category'];
     $categoryCounts[] = (int) $row['cnt'];
+}
+
+// ---------- 3. BORROW ACTIVITY LAST 7 DAYS ----------
+
+$dailyStmt = $pdo->query("
+    SELECT DATE(borrow_date) AS day, COUNT(*) AS cnt
+    FROM borrow
+    WHERE borrow_date >= CURDATE() - INTERVAL 6 DAY
+    GROUP BY DATE(borrow_date)
+    ORDER BY day ASC
+");
+
+$borrowByDay = [];
+
+while ($row = $dailyStmt->fetch()) {
+    $borrowByDay[$row['day']] = (int) $row['cnt'];
+}
+
+// Generate labels and counts for the last 7 days
+
+$dayLabels = [];
+$dailyBorrows = [];
+
+for ($i = 6; $i >= 0; $i--) {
+    $date = date('Y-m-d', strtotime("-$i days"));
+
+    $dayLabels[] = date('D', strtotime($date));
+    $dailyBorrows[] = $borrowByDay[$date] ?? 0;
 }
 ?>
 
