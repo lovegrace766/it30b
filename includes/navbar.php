@@ -36,6 +36,8 @@ $dailyStmt = $pdo->query("
     ORDER BY day ASC
 ");
 
+
+
 $borrowByDay = [];
 
 while ($row = $dailyStmt->fetch()) {
@@ -53,6 +55,22 @@ for ($i = 6; $i >= 0; $i--) {
     $dayLabels[] = date('D', strtotime($date));
     $dailyBorrows[] = $borrowByDay[$date] ?? 0;
 }
+
+// ---------- 4. RECENT BORROWS ----------
+
+$recentStmt = $pdo->query("
+    SELECT
+        s.student_first_name,
+        s.student_last_name,
+        b.book_title,
+        br.borrow_return_date
+    FROM borrow br
+    INNER JOIN students s ON br.student_id = s.student_id
+    INNER JOIN books b ON br.book_id = b.book_id
+    ORDER BY br.borrow_id DESC
+    LIMIT 5
+");
+$recentBorrows = $recentStmt->fetchAll();
 ?>
 
 <!-- Material Icon -->

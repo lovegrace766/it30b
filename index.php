@@ -418,10 +418,11 @@ if ($section === 'borrow' && $action === 'return') {
     <h1>Simple Library System</h1>
 
     <nav>
+        <a href="dashboard.php">Dashboard</a>
         <a href="index.php?section=students">Students</a>
         <a href="index.php?section=books">Books</a>
         <a href="index.php?section=borrow">Borrow</a>
-        <a href="dashboard.php">Dashboard</a>
+        
     </nav>
 
     <hr>
