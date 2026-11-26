@@ -20,14 +20,12 @@ try {
 }
 
 // ---------- 1. KPI COUNTS ----------
-
 $studentCount  = $pdo->query("SELECT COUNT(*) FROM students")->fetchColumn();
 $bookCount     = $pdo->query("SELECT COUNT(*) FROM books")->fetchColumn();
 $totalBorrows  = $pdo->query("SELECT COUNT(*) FROM borrow")->fetchColumn();
 $activeBorrows = $pdo->query("SELECT COUNT(*) FROM borrow WHERE borrow_return_date IS NULL")->fetchColumn();
 
 // ---------- 2. BOOKS BY CATEGORY ----------
-
 $catStmt = $pdo->query("
     SELECT book_category, COUNT(*) AS cnt
     FROM books
@@ -37,9 +35,8 @@ $catStmt = $pdo->query("
 
 $categories = [];
 $categoryCounts = [];
-
 while ($row = $catStmt->fetch()) {
-    $categories[] = $row['book_category'];
+    $categories[]     = $row['book_category'];
     $categoryCounts[] = (int) $row['cnt'];
 }
 
@@ -52,6 +49,8 @@ $dailyStmt = $pdo->query("
     GROUP BY DATE(borrow_date)
     ORDER BY day ASC
 ");
+
+
 
 $borrowByDay = [];
 
@@ -70,6 +69,22 @@ for ($i = 6; $i >= 0; $i--) {
     $dayLabels[] = date('D', strtotime($date));
     $dailyBorrows[] = $borrowByDay[$date] ?? 0;
 }
+
+// ---------- 4. RECENT BORROWS ----------
+
+$recentStmt = $pdo->query("
+    SELECT
+        s.student_first_name,
+        s.student_last_name,
+        b.book_title,
+        br.borrow_return_date
+    FROM borrow br
+    INNER JOIN students s ON br.student_id = s.student_id
+    INNER JOIN books b ON br.book_id = b.book_id
+    ORDER BY br.borrow_id DESC
+    LIMIT 5
+");
+$recentBorrows = $recentStmt->fetchAll();
 ?>
 
 <!DOCTYPE html>
@@ -323,7 +338,7 @@ for ($i = 6; $i >= 0; $i--) {
                 <span class="material-icons">school</span>
             </div>
             <div class="stat-number"><?= $studentCount ?></div>
-            <div class="stat-sub">enrol led</div>
+            <div class="stat-sub">enrolled</div>
         </div>
 
         <div class="stat-card">
@@ -353,7 +368,7 @@ for ($i = 6; $i >= 0; $i--) {
             <div class="stat-sub">not returned</div>
         </div>
     </div>
-</div>
+
 
 <!-- CHARTS -->
 <div class="charts-grid">
@@ -369,6 +384,21 @@ for ($i = 6; $i >= 0; $i--) {
         </div>
         <canvas id="categoryChart" width="400" height="200"></canvas>
     </div>
+
+    <!-- Bar Chart: Borrow Activity -->
+<div class="chart-card">
+    <div class="chart-title">
+        Borrows · last 7 days
+
+        <span>
+            <span class="material-icons">trending_up</span>
+            activity
+        </span>
+    </div>
+
+    <canvas id="borrowChart" width="400" height="200"></canvas>
+</div>
+</div>
 
 <!-- RECENT BORROWS -->
 <div class="recent-borrows">
@@ -407,24 +437,8 @@ for ($i = 6; $i >= 0; $i--) {
         <?php endforeach; ?>
     <?php endif; ?>
 </div>
-
-
-<!-- Bar Chart: Borrow Activity -->
-<div class="chart-card">
-    <div class="chart-title">
-        Borrows · last 7 days
-
-        <span>
-            <span class="material-icons">trending_up</span>
-            activity
-        </span>
-    </div>
-
-    <canvas id="borrowChart" width="400" height="200"></canvas>
 </div>
 
-</div>
-<div>
 
 </body>
 <script>
